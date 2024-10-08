@@ -41,6 +41,7 @@ async function getSystemInfo() {
 app.get('/', async (req, res) => {
     try {
         const infoService1 = await getSystemInfo();
+        // for networking with service2 in docker containers
         const service2BaseURL = process.env.SERVICE2_BASE_URL || 'http://localhost:8200';
         const service2Response = await axios.get(`${service2BaseURL}/`);
         // const service2Response = await axios.get('http://localhost:8200/');
