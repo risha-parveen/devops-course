@@ -1,0 +1,26 @@
+services:
+  service1:  
+    image: risha/service1  
+    depends_on:
+      - service2  
+    build:
+      dockerfile: Dockerfile  
+      context:  ./service1  
+    ports:
+      - "8199:8199"  
+    networks:
+      - backend  # Connects the service to the "backend" network
+    environment:
+      - SERVICE2_BASE_URL=http://service2:8200
+    
+  service2:  
+      image: risha/service2  
+      build:
+        dockerfile: Dockerfile  
+        context: ./service2  
+      networks:
+        - backend  # Connects the service to the "backend" network
+      
+networks:
+  backend:  # Defines a custom Docker network named "backend" for communication between services
+
