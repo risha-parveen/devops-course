@@ -1,0 +1,50 @@
+LLM was used in this assignment to guide me through some hurdles I faced during implementation.
+
+Model used: Chatgpt 4o
+
+
+1. To help fix errors encountered. 
+
+Example: I encountered the error "exec /app/service2: exec format error". So i provided the error message and the dockerfile
+to the LLM.
+
+It provided me an answer which was not useful for me:
+"# Set the target OS and architecture for the Go binary (Linux and AMD64)
+ENV GOOS=linux
+ENV GOARCH=amd64"
+
+The issue was just in the path setting of the dockerfile
+
+2. Configuring the docker-compose file
+
+Example: While I ran the service1 and service2 in my localhost everything worked fine. But when it was ran in docker, the two containers
+were not able to network with each other. In my codebase it was hardcoded that const service2Response = await axios.get('http://localhost:8200/');
+I understood I needed to configure docker so that it dynamically set to the address of service2 container
+
+Hence I used the prompt: "const service2Response = await axios.get('http://localhost:8200/');
+in this code, how do I make it so that this will call the port 8200 in whichever network it is present"
+and also provided docker-compose file
+
+The LLM provided me a very helpful answer that solved my problem quickly.
+
+Response:
+"To make your axios request work with the correct network when the service is in a Docker container or any other dynamic environment, you need to adjust your approach based on the context of how your services are networked. Below are different ways you can handle it:
+
+1. Using Environment Variables
+If you're using docker-compose or some other container orchestration, the service may not always be accessible via localhost. Instead of hardcoding localhost:8200, use an environment variable to dynamically configure the base URL for your service.
+
+const service2BaseURL = process.env.SERVICE2_BASE_URL || 'http://localhost:8200';
+const service2Response = await axios.get(`${service2BaseURL}/`);"
+
+"Docker Compose YAML Example
+
+version: '3'
+services:
+  service1:
+    build: ./service1
+    ports:
+      - "8199:8199"
+    environment:
+      - SERVICE2_BASE_URL=http://service2:8200"
+
+3. The other usages were mostly simple queries to understand the concept and get examples.

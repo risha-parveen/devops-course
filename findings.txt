@@ -1,0 +1,12 @@
+IP address: The IP address between the containers and the host machine is different. They have different networking environments and 
+so, a bridge network is used for containers to communicate with each other and also the host.
+
+list of running processes: containers only consists of the processes that are running inside them. It does not have information about
+processes running on the host or other containers. Therefore, the list of processes are shorter when ran in docker compared to host machine.
+I also noticed that the host machine is aware of the processes taking placing in the containers.
+
+file system: In this exercise, since there was no volumes mounted containers only had the files related to its specific execution.
+
+uptime: since the containers were started at different timings the results for this parameter were different for service 1 and 2.
+This time is specific to the containers showing the time since last boot. Containers are isolated environments, and they don’t share the system clock or processes
+with each other or the host machine.

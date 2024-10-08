@@ -1,0 +1,15 @@
+docker container ls output:
+
+rishaparveen@Rishas-MacBook-Air devops-course % docker container ls
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS          PORTS                    NAMES
+cf5df621e31f   risha/service1   "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes   0.0.0.0:8199->8199/tcp   devops-course-service1-1
+396a93c2783e   risha/service2   "/app/service2"          12 minutes ago   Up 12 minutes                            devops-course-service2-1
+
+docker network ls output:
+
+rishaparveen@Rishas-MacBook-Air devops-course % docker network ls
+NETWORK ID     NAME                    DRIVER    SCOPE
+ff22736bf4a9   bridge                  bridge    local
+6654027ad43a   devops-course_backend   bridge    local
+d9e11f39d1dc   host                    host      local
+64388768dcac   none                    null      local
