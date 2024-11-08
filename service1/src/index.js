@@ -79,6 +79,16 @@ app.get('/', async (req, res) => {
     }
 });
 
+app.post('/shutdown', (req, res) => {
+    res.json({ message: 'Shutting down...' });
+    
+    // Wait a moment to send the response before shutting down
+    setTimeout(() => {
+        // This will kill the Node process, which will cause the container to stop
+        process.exit(0);
+    }, 500);
+});
+
 app.listen(port, () => {
     console.log(`Service1 listening at ${port}`);
 });

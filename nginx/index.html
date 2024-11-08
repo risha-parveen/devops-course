@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .container { 
+            width: 300px; 
+        }
+        button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            cursor: pointer; 
+        }
+        .textarea { 
+            width: 100%; 
+            padding: 10px; 
+            height: 300px; 
+            margin-top: 10px; 
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script>
+        async function sendRequest() {
+            const textarea = document.getElementById('response');
+            textarea.value = 'Sending request...';
+            
+            try {
+                const response = await fetch('/api', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                textarea.value = JSON.stringify(data, null, 2);
+            } catch (error) {
+                textarea.value = `Error: ${error.message}`;
+            }
+        }
+
+        async function stopService() {
+            if (confirm('Are you sure you want to stop all services?')) {
+                try {
+                    const response = await fetch('/shutdown', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    document.getElementById('response').value = 'Shutting down all services...';
+                    
+                    // Wait a moment and then show a final message
+                    setTimeout(() => {
+                        document.body.innerHTML = '<h1>Services have been shut down.</h1>';
+                    }, 1000);
+                } catch (error) {
+                    document.getElementById('response').value = `Error during shutdown: ${error.message}`;
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Dashboard</h2>
+        <button onclick="sendRequest()">REQUEST</button>
+        <button onclick="stopService()">STOP</button>
+        <textarea id="response" class="textarea" readonly></textarea>
+    </div>
+</body>
+</html>

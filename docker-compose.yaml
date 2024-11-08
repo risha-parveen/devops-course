@@ -29,7 +29,7 @@ services:
         context: ./service2  
       networks:
         - backend  # Connects the service to the "backend" network
-      
+
 networks:
   backend:  # Defines a custom Docker network named "backend" for communication between services
 
