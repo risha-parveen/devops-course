@@ -34,7 +34,6 @@
     <script>
         async function sendRequest() {
             const textarea = document.getElementById('response');
-            textarea.value = 'Sending request...';
             
             try {
                 const response = await fetch('/api', {
