@@ -49,7 +49,23 @@
                 }
                 
                 const data = await response.json();
-                textarea.value = JSON.stringify(data, null, 2);
+                const formattedText = `Service1:
+- IP address information: ${data.Service1['IP address information']}
+- List of running processes:
+${data.Service1['list of running processes']}
+- Available disk space:
+${data.Service1['available disk space']}
+- Time since last boot: ${data.Service1['time since last boot']}
+
+Service2:
+- IP address information: ${data.Service2['IP address information']}
+- List of running processes:
+${data.Service2['list of running processes']}
+- Available disk space:
+${data.Service2['available disk space']}
+- Time since last boot: ${data.Service2['time since last boot']}`;
+
+                textarea.value = formattedText;
             } catch (error) {
                 textarea.value = `Error: ${error.message}`;
             }
@@ -70,12 +86,12 @@
                     }
                     
                     const data = await response.json();
-                    document.getElementById('response').value = 'Shutting down all services...';
+                    document.getElementById('response').value = 'Please wait. Shutting down all services...';
                     
                     // Wait a moment and then show a final message
                     setTimeout(() => {
                         document.body.innerHTML = '<h1>Services have been shut down.</h1>';
-                    }, 1000);
+                    }, 10000);
                 } catch (error) {
                     document.getElementById('response').value = `Error during shutdown: ${error.message}`;
                 }

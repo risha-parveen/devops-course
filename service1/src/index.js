@@ -66,7 +66,7 @@ app.get('/', async (req, res) => {
                 'IP address information': infoService2.ipAddress,
                 'list of running processes': infoService2.processes,
                 'available disk space': infoService2.diskSpace,
-                'time since last boot2': `${infoService2.uptimeSeconds} seconds`
+                'time since last boot': `${infoService2.uptimeSeconds} seconds`
             }
         };
 
