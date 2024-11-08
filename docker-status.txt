@@ -1,15 +1,18 @@
 docker container ls output:
 
-rishaparveen@Rishas-MacBook-Air devops-course % docker container ls
-CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS          PORTS                    NAMES
-cf5df621e31f   risha/service1   "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes   0.0.0.0:8199->8199/tcp   devops-course-service1-1
-396a93c2783e   risha/service2   "/app/service2"          12 minutes ago   Up 12 minutes                            devops-course-service2-1
+CONTAINER ID   IMAGE                 COMMAND                  CREATED              STATUS              PORTS                            NAMES
+cd55fdf95c64   devops-course-nginx   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp, 0.0.0.0:8198->8198/tcp   devops-course-nginx-1
+dff6d9d79d0f   risha/service1        "docker-entrypoint.s…"   About a minute ago   Up About a minute   8199/tcp                         devops-course-service1-3
+6749e91c35fa   risha/service1        "docker-entrypoint.s…"   About a minute ago   Up About a minute   8199/tcp                         devops-course-service1-2
+611e521c7d36   risha/service1        "docker-entrypoint.s…"   About a minute ago   Up About a minute   8199/tcp                         devops-course-service1-1
+7aa8f8cefd2f   risha/service2        "/app/service2"          About a minute ago   Up About a minute                                    devops-course-service2-1
+
 
 docker network ls output:
 
 rishaparveen@Rishas-MacBook-Air devops-course % docker network ls
 NETWORK ID     NAME                    DRIVER    SCOPE
-ff22736bf4a9   bridge                  bridge    local
-6654027ad43a   devops-course_backend   bridge    local
+5aacbd196f57   bridge                  bridge    local
+0304af6889f6   devops-course_backend   bridge    local
 d9e11f39d1dc   host                    host      local
 64388768dcac   none                    null      local
