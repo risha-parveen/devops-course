@@ -8,6 +8,8 @@ const execPromise = util.promisify(exec);
 const app = express();
 const port = 8199;
 
+let isProcessing = false;
+
 // Function to get system information
 async function getSystemInfo() {
     try {
@@ -38,6 +40,10 @@ async function getSystemInfo() {
     }
 }
 
+app.get('/health', (req, res) => {
+    res.json({ available: !isProcessing });
+});
+
 app.get('/', async (req, res) => {
     try {
         const infoService1 = await getSystemInfo();
@@ -62,9 +68,12 @@ app.get('/', async (req, res) => {
                 'time since last boot2': `${infoService2.uptimeSeconds} seconds`
             }
         };
-        await new Promise(resolve => setTimeout(resolve, 2000));
 
         res.json(response);
+        setTimeout(() => {
+            isProcessing = false;
+            console.log('Service is now available for new requests');
+        }, 2000);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
