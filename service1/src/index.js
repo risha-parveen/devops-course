@@ -97,13 +97,13 @@ app.post('/shutdown', (req, res) => {
                     console.error(`Error stopping container ${containerInfo.Id}: ${stopErr}`);
                     return;
                 }
-                container.remove((removeErr) => {
-                    if (removeErr) {
-                        console.error(`Error removing container ${containerInfo.Id}: ${removeErr}`);
-                    } else {
-                        console.log(`Container ${containerInfo.Id} stopped and removed`);
-                    }
-                });
+                // container.remove((removeErr) => {
+                //     if (removeErr) {
+                //         console.error(`Error removing container ${containerInfo.Id}: ${removeErr}`);
+                //     } else {
+                //         console.log(`Container ${containerInfo.Id} stopped and removed`);
+                //     }
+                // });
             });
         });
     });
