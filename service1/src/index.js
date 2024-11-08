@@ -62,6 +62,7 @@ app.get('/', async (req, res) => {
                 'time since last boot2': `${infoService2.uptimeSeconds} seconds`
             }
         };
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         res.json(response);
     } catch (error) {
