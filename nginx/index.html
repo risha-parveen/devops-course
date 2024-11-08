@@ -14,7 +14,7 @@
             margin: 0; 
         }
         .container { 
-            width: 300px; 
+            width: 400px; 
         }
         button { 
             width: 100%; 
@@ -23,9 +23,9 @@
             cursor: pointer; 
         }
         .textarea { 
-            width: 100%; 
-            padding: 10px; 
-            height: 300px; 
+            width: calc(100% - 20px); 
+            height: 500px; 
+            padding: 10px;
             margin-top: 10px; 
             font-family: monospace;
             white-space: pre-wrap;
@@ -49,6 +49,7 @@
                 
                 const data = await response.json();
                 const formattedText = `Service1:
+
 - IP address information: ${data.Service1['IP address information']}
 - List of running processes:
 ${data.Service1['list of running processes']}
@@ -57,6 +58,7 @@ ${data.Service1['available disk space']}
 - Time since last boot: ${data.Service1['time since last boot']}
 
 Service2:
+
 - IP address information: ${data.Service2['IP address information']}
 - List of running processes:
 ${data.Service2['list of running processes']}
@@ -101,8 +103,8 @@ ${data.Service2['available disk space']}
 <body>
     <div class="container">
         <h2>Dashboard</h2>
-        <button onclick="sendRequest()">REQUEST</button>
-        <button onclick="stopService()">STOP</button>
+        <button onclick="sendRequest()" style="background-color: rgb(50, 49, 49); color: white; font-weight: bold;">REQUEST</button>
+        <button onclick="stopService()" style="background-color: rgb(207, 207, 207); color: black; font-weight: bold;">STOP</button>
         <textarea id="response" class="textarea" readonly></textarea>
     </div>
 </body>
