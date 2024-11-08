@@ -6,8 +6,10 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"os/exec"
-	"time"
+	"strconv"
+	"strings"
 )
 
 type SystemInfo struct {
@@ -48,7 +50,16 @@ func getSystemInfo() (SystemInfo, error) {
 	sysInfo.DiskSpace = string(dfOutput)
 
 	// system uptime in seconds
-	sysInfo.UptimeSeconds = int64(time.Since(time.Unix(0, 0)).Seconds())
+	uptimeBytes, err := os.ReadFile("/proc/uptime")
+	if err != nil {
+		return sysInfo, err
+	}
+	uptimeString := strings.Split(string(uptimeBytes), " ")[0]
+	uptime, err := strconv.ParseFloat(uptimeString, 64)
+	if err != nil {
+		return sysInfo, err
+	}
+	sysInfo.UptimeSeconds = int64(uptime)
 
 	return sysInfo, nil
 }
