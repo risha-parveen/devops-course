@@ -12,6 +12,8 @@ services:
       - backend  # Connects the service to the "backend" network
     environment:
       - SERVICE2_BASE_URL=http://service2:8200
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   nginx:
     build: ./nginx

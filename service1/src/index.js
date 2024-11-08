@@ -1,6 +1,7 @@
 const express = require('express');
 const os = require('os');
 const { exec } = require('child_process');
+const Docker = require('dockerode');
 const axios = require('axios');
 const util = require('util');
 const execPromise = util.promisify(exec);
@@ -79,14 +80,33 @@ app.get('/', async (req, res) => {
     }
 });
 
+const docker = new Docker({ socketPath: '/var/run/docker.sock' });
+
 app.post('/shutdown', (req, res) => {
-    res.json({ message: 'Shutting down...' });
+    res.json({ message: 'Shutting down all services...' });
     
-    // Wait a moment to send the response before shutting down
-    setTimeout(() => {
-        // This will kill the Node process, which will cause the container to stop
-        process.exit(0);
-    }, 500);
+    docker.listContainers({ all: true }, (err, containers) => {
+        if (err) {
+            console.error(`Error listing containers: ${err}`);
+            return;
+        }
+        containers.forEach((containerInfo) => {
+            const container = docker.getContainer(containerInfo.Id);
+            container.stop((stopErr) => {
+                if (stopErr) {
+                    console.error(`Error stopping container ${containerInfo.Id}: ${stopErr}`);
+                    return;
+                }
+                container.remove((removeErr) => {
+                    if (removeErr) {
+                        console.error(`Error removing container ${containerInfo.Id}: ${removeErr}`);
+                    } else {
+                        console.log(`Container ${containerInfo.Id} stopped and removed`);
+                    }
+                });
+            });
+        });
+    });
 });
 
 app.listen(port, () => {

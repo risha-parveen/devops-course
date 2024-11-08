@@ -22,6 +22,7 @@
     "delayed-stream": "^1.0.0",
     "depd": "^2.0.0",
     "destroy": "^1.2.0",
+    "dockerode": "^4.0.2",
     "ee-first": "^1.1.1",
     "encodeurl": "^2.0.0",
     "es-define-property": "^1.0.0",
