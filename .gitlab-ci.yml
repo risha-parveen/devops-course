@@ -2,17 +2,16 @@ stages:
   - build
   - test
   - deploy
+  - cleanup
 
 variables:
   DOCKER_COMPOSE_VERSION: "2.21.0"
-  # Environment variables are referenced but not defined here
 
 default:
   tags:
     - Mac-runner
 
 before_script:
-  # Verify required variables are set
   - |
     if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
       echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
@@ -25,19 +24,16 @@ build:
   stage: build
   script:
     - echo "Building the images..."
-    - docker-compose build --no-cache
+    - docker-compose build
     - echo "Build completed"
-  only:
-    - project
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
 
 test:
   stage: test
   script:
-    # First bring up the services
     - docker-compose up -d
-    # Wait for services to be ready
     - sleep 10
-    # Test nginx with basic auth using CI/CD variables
     - |
       response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
       if [ "$response" != "200" ]; then
@@ -45,32 +41,27 @@ test:
         exit 1
       fi
     - echo "Basic tests passed"
-    # Clean up
-    - docker-compose down
-  only:
-    - project
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
 
 deploy:
   stage: deploy
   script:
     - echo "Deploying application..."
     - docker-compose up -d
-    # Add basic health check after deployment
     - sleep 10
-    # Test deployment with CI/CD variables
     - |
       response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
       if [ "$response" != "200" ]; then
         echo "Deployment verification failed"
         exit 1
       fi
-  only:
-    - project
-  needs:
-    - test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
 
-after_script:
-  - if [[ "$CI_JOB_STAGE" != "deploy" ]]; then
-      docker-compose down;
-      docker system prune -f;
-    fi
+cleanup:
+  stage: cleanup
+  script:
+    - docker-compose down
+    - docker system prune -f
+  when: manual
