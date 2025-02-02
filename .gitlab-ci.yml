@@ -1,5 +1,17 @@
-image: node:20-alpine
+image: node:20
 
+services:
+  - docker:20.10.16-dind
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_COMPOSE_VERSION: "2.21.0"
+
+before_script:
+  # Install Docker and Docker Compose
+  - apt-get update
+  - apt-get install -y docker.io docker-compose curl
 
 stages:
   - build
@@ -7,19 +19,10 @@ stages:
   - deploy
   - cleanup
 
-variables:
-  DOCKER_COMPOSE_VERSION: "2.21.0"
 
 default:
   tags:
     - Mac-runner
-
-before_script:
-  - node --version  # Check Node version
-  - npm --version   # Check npm version
-  - pwd            # Check working directory
-  - ls -la         # List files
-  - echo $PATH
 
 build:
   stage: build
