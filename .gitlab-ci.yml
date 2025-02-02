@@ -1,0 +1,63 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  # Add any environment variables you need
+  DOCKER_COMPOSE_VERSION: "2.21.0"
+
+before_script:
+  # This will run before each job
+  - docker info
+  - docker-compose --version
+
+build:
+  stage: build
+  script:
+    - echo "Building the images..."
+    - docker-compose build --no-cache
+    - echo "Build completed"
+  # We only want to build on the project branch as specified in requirements
+  only:
+    - project
+
+test:
+  stage: test
+  script:
+    # First bring up the services
+    - docker-compose up -d
+    # Wait for services to be ready (adjust sleep time if needed)
+    - sleep 10
+    # Basic health check - test if nginx is responding
+    - curl -I http://localhost:8198 || exit 1
+    # Basic API test - you'll expand this later
+    - |
+      response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8197/state)
+      if [ "$response" != "200" ]; then
+        echo "API test failed"
+        exit 1
+      fi
+    # Clean up
+    - docker-compose down
+  only:
+    - project
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - docker-compose up -d
+    # Add basic health check after deployment
+    - sleep 10
+    - curl -I http://localhost:8198 || exit 1
+  only:
+    - project
+  # This ensures deployment only happens if tests pass
+  needs:
+    - test
+
+# Clean up after pipeline finishes
+after_script:
+  - docker-compose down
+  - docker system prune -f
