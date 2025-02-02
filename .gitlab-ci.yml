@@ -70,5 +70,7 @@ deploy:
     - test
 
 after_script:
-  - docker-compose down
-  - docker system prune -f
+  - if [[ "$CI_JOB_STAGE" != "deploy" ]]; then
+      docker-compose down;
+      docker system prune -f;
+    fi
