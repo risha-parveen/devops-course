@@ -33,14 +33,12 @@ test:
   stage: test
   script:
     - docker-compose up -d
-    - sleep 10
-    - |
-      response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
-      if [ "$response" != "200" ]; then
-        echo "Nginx test failed with status $response"
-        exit 1
-      fi
-    - echo "Basic tests passed"
+    - npm install
+    # Pass CI variables directly to the test command
+    - NGINX_USER=$NGINX_USER NGINX_PASS=$NGINX_PASS node tests/basic-api-tests.js
+  variables:
+    NGINX_USER: $NGINX_USER  
+    NGINX_PASS: $NGINX_PASS
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
 
