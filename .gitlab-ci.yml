@@ -4,21 +4,14 @@ stages:
   - deploy
 
 variables:
-  # Add any environment variables you need
   DOCKER_COMPOSE_VERSION: "2.21.0"
+  # Environment variables are referenced but not defined here
 
 default:
   tags:
     - Mac-runner
 
 before_script:
-  # Load environment variables from .env file if it exists
-  - |
-    if [ -f .env ]; then
-      export $(cat .env | grep -v '^#' | xargs)
-    else
-      echo "Warning: .env file not found. Using CI/CD variables."
-    fi
   # Verify required variables are set
   - |
     if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
@@ -34,7 +27,6 @@ build:
     - echo "Building the images..."
     - docker-compose build --no-cache
     - echo "Build completed"
-  # We only want to build on the project branch as specified in requirements
   only:
     - project
 
@@ -43,16 +35,15 @@ test:
   script:
     # First bring up the services
     - docker-compose up -d
-    # Wait for services to be ready (adjust sleep time if needed)
+    # Wait for services to be ready
     - sleep 10
-    # Test nginx with basic auth
+    # Test nginx with basic auth using CI/CD variables
     - |
       response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
       if [ "$response" != "200" ]; then
         echo "Nginx test failed with status $response"
         exit 1
       fi
-    # For now, we'll skip the /state test since it's not implemented yet
     - echo "Basic tests passed"
     # Clean up
     - docker-compose down
@@ -66,6 +57,7 @@ deploy:
     - docker-compose up -d
     # Add basic health check after deployment
     - sleep 10
+    # Test deployment with CI/CD variables
     - |
       response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
       if [ "$response" != "200" ]; then
@@ -74,11 +66,9 @@ deploy:
       fi
   only:
     - project
-  # This ensures deployment only happens if tests pass
   needs:
     - test
 
-# Clean up after pipeline finishes
 after_script:
   - docker-compose down
   - docker system prune -f
