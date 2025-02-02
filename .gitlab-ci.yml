@@ -1,3 +1,6 @@
+image: node:20-alpine
+
+
 stages:
   - build
   - test
@@ -12,13 +15,11 @@ default:
     - Mac-runner
 
 before_script:
-  - |
-    if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
-      echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
-      exit 1
-    fi
-  - docker info
-  - docker-compose --version
+  - node --version  # Check Node version
+  - npm --version   # Check npm version
+  - pwd            # Check working directory
+  - ls -la         # List files
+  - echo $PATH
 
 build:
   stage: build
@@ -30,7 +31,6 @@ build:
     - if: '$CI_COMMIT_BRANCH == "project"'
 
 test:
-  image: node:20
   stage: test
   script:
     - docker-compose up -d
