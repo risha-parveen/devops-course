@@ -12,7 +12,19 @@ default:
     - Mac-runner
 
 before_script:
-  # This will run before each job
+  # Load environment variables from .env file if it exists
+  - |
+    if [ -f .env ]; then
+      export $(cat .env | grep -v '^#' | xargs)
+    else
+      echo "Warning: .env file not found. Using CI/CD variables."
+    fi
+  # Verify required variables are set
+  - |
+    if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
+      echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
+      exit 1
+    fi
   - docker info
   - docker-compose --version
 
@@ -54,7 +66,12 @@ deploy:
     - docker-compose up -d
     # Add basic health check after deployment
     - sleep 10
-    - curl -I http://localhost:8198 || exit 1
+    - |
+      response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
+      if [ "$response" != "200" ]; then
+        echo "Deployment verification failed"
+        exit 1
+      fi
   only:
     - project
   # This ensures deployment only happens if tests pass
