@@ -7,6 +7,10 @@ variables:
   # Add any environment variables you need
   DOCKER_COMPOSE_VERSION: "2.21.0"
 
+default:
+  tags:
+    - Mac-runner
+
 before_script:
   # This will run before each job
   - docker info
