@@ -22,7 +22,7 @@ stages:
 
 default:
   tags:
-    - Mac-runner
+    - mac-self-hosted
 
 build:
   stage: build
