@@ -29,8 +29,8 @@ build:
     - risha
   stage: build
   script:
-    - echo "Building the images..."
-    - docker-compose build
+    # - echo "Building the images..."
+    # - docker-compose build
     - echo "Build completed"
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
