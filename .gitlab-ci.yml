@@ -1,17 +1,17 @@
-image: node:20
+# image: node:20
 
-services:
-  - docker:20.10.16-dind
+# services:
+#   - docker:20.10.16-dind
 
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_COMPOSE_VERSION: "2.21.0"
+# variables:
+#   DOCKER_HOST: tcp://docker:2375
+#   DOCKER_TLS_CERTDIR: ""
+#   DOCKER_COMPOSE_VERSION: "2.21.0"
 
-before_script:
-  # Install Docker and Docker Compose
-  - apt-get update
-  - apt-get install -y docker.io docker-compose curl
+# before_script:
+#   # Install Docker and Docker Compose
+#   - apt-get update
+#   - apt-get install -y docker.io docker-compose curl
 
 stages:
   - build
