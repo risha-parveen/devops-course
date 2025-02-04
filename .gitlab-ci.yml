@@ -1,71 +1,65 @@
-# image: node:20
-
-# services:
-#   - docker:20.10.16-dind
-
-# variables:
-#   DOCKER_HOST: tcp://docker:2375
-#   DOCKER_TLS_CERTDIR: ""
-#   DOCKER_COMPOSE_VERSION: "2.21.0"
-
-# before_script:
-#   # Install Docker and Docker Compose
-#   - apt-get update
-#   - apt-get install -y docker.io docker-compose curl
-
 stages:
   - build
-  # - test
-  # - deploy
-  # - cleanup
+  - test
+  - deploy
+  - cleanup
 
+variables:
+  DOCKER_COMPOSE_VERSION: "2.21.0"
 
 default:
   tags:
-    - risha
+    - linux
+
+before_script:
+  - |
+    if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
+      echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
+      exit 1
+    fi
+  - docker info
+  - docker-compose --version
 
 build:
-  tags:
-    - risha
   stage: build
   script:
-    # - echo "Building the images..."
-    # - docker-compose build
+    - echo "Building the images..."
+    - docker-compose build
     - echo "Build completed"
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
 
-# test:
-#   stage: test
-#   script:
-#     - docker-compose up -d
-#     - npm install
-#     # Pass CI variables directly to the test command
-#     - NGINX_USER=$NGINX_USER NGINX_PASS=$NGINX_PASS node tests/basic-api-tests.js
-#   variables:
-#     NGINX_USER: $NGINX_USER  
-#     NGINX_PASS: $NGINX_PASS
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "project"'
+test:
+  stage: test
+  script:
+    - docker-compose up -d
+    - npm install
+    # Pass CI variables directly to the test command
+    - NGINX_USER=$NGINX_USER NGINX_PASS=$NGINX_PASS node tests/basic-api-tests.js
+  variables:
+    NGINX_USER: $NGINX_USER  
+    NGINX_PASS: $NGINX_PASS
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
 
-# deploy:
-#   stage: deploy
-#   script:
-#     - echo "Deploying application..."
-#     - docker-compose up -d
-#     - sleep 10
-#     - |
-#       response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
-#       if [ "$response" != "200" ]; then
-#         echo "Deployment verification failed"
-#         exit 1
-#       fi
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "project"'
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - docker-compose up -d
+    - sleep 10
+    - |
+      response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
+      if [ "$response" != "200" ]; then
+        echo "Deployment verification failed"
+        exit 1
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
 
-# cleanup:
-#   stage: cleanup
-#   script:
-#     - docker-compose down
-#     - docker system prune -f
-#   when: manual
+cleanup:
+  stage: cleanup
+  script:
+    - docker-compose down
+    - docker system prune -f
+  when: manual
