@@ -1,9 +1,12 @@
 image: docker:27.2.0
 services:
-  - docker:27.2.0-dind
-variables:
+  - name: docker:27.2.0-dind
+    alias: docker
+variables: 
   DOCKER_HOST: tcp://docker:2376
   DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "/certs/client"
 before_script:
   # - echo "Ensuring Docker doesn't use TLS..."
   # - rm -rf /root/.docker /certs  # ✅ Remove any lingering TLS configs
