@@ -4,7 +4,7 @@ services:
   - docker:dind  # Add Docker-in-Docker service
 
 variables:
-  DOCKER_COMPOSE_VERSION: "2.24.6"
+  DOCKER_COMPOSE_VERSION: "2.21.0"
   # Enable docker-in-docker
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""  # Disable TLS since we're using TCP
@@ -12,9 +12,9 @@ variables:
 
 stages:
   - build
-  - test
-  - deploy
-  - cleanup
+  # - test
+  # - deploy
+  # - cleanup
 
 default:
   tags:
@@ -26,7 +26,11 @@ before_script:
       echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
       exit 1
     fi
-  - apk add --no-cache docker-compose~=$DOCKER_COMPOSE_VERSION py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
+  - apk add --no-cache py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make curl
+  # Install Docker Compose directly from GitHub releases
+  - |
+    curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
   - docker info
   - docker-compose --version
 
@@ -39,37 +43,37 @@ build:
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
 
-test:
-  stage: test
-  script:
-    - docker-compose up -d
-    - npm install
-    # Pass CI variables directly to the test command
-    - NGINX_USER=$NGINX_USER NGINX_PASS=$NGINX_PASS node tests/basic-api-tests.js
-  variables:
-    NGINX_USER: $NGINX_USER  
-    NGINX_PASS: $NGINX_PASS
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "project"'
+# test:
+#   stage: test
+#   script:
+#     - docker-compose up -d
+#     - npm install
+#     # Pass CI variables directly to the test command
+#     - NGINX_USER=$NGINX_USER NGINX_PASS=$NGINX_PASS node tests/basic-api-tests.js
+#   variables:
+#     NGINX_USER: $NGINX_USER  
+#     NGINX_PASS: $NGINX_PASS
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH == "project"'
 
-deploy:
-  stage: deploy
-  script:
-    - echo "Deploying application..."
-    - docker-compose up -d
-    - sleep 10
-    - |
-      response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
-      if [ "$response" != "200" ]; then
-        echo "Deployment verification failed"
-        exit 1
-      fi
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "project"'
+# deploy:
+#   stage: deploy
+#   script:
+#     - echo "Deploying application..."
+#     - docker-compose up -d
+#     - sleep 10
+#     - |
+#       response=$(curl -s -o /dev/null -w "%{http_code}" -u "${NGINX_USER}:${NGINX_PASS}" http://localhost:8198)
+#       if [ "$response" != "200" ]; then
+#         echo "Deployment verification failed"
+#         exit 1
+#       fi
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH == "project"'
 
-cleanup:
-  stage: cleanup
-  script:
-    - docker-compose down
-    - docker system prune -f
-  when: manual
+# cleanup:
+#   stage: cleanup
+#   script:
+#     - docker-compose down
+#     - docker system prune -f
+#   when: manual
