@@ -34,4 +34,5 @@ services:
 
 networks:
   backend:  # Defines a custom Docker network named "backend" for communication between services
-
+  # name: "${CI_PROJECT_NAME}_backend"
+  # driver: bridge

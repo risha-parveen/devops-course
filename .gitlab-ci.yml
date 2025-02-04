@@ -1,15 +1,24 @@
+image: docker:latest  # Use Docker image instead of Alpine
+
+services:
+  - docker:dind  # Add Docker-in-Docker service
+
+variables:
+  DOCKER_COMPOSE_VERSION: "2.24.6"
+  # Enable docker-in-docker
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""  # Disable TLS since we're using TCP
+  DOCKER_DRIVER: overlay2
+
 stages:
   - build
   - test
   - deploy
   - cleanup
 
-variables:
-  DOCKER_COMPOSE_VERSION: "2.21.0"
-
 default:
   tags:
-    - linux
+    - new-runner
 
 before_script:
   - |
@@ -17,6 +26,7 @@ before_script:
       echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
       exit 1
     fi
+  - apk add --no-cache docker-compose~=$DOCKER_COMPOSE_VERSION py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
   - docker info
   - docker-compose --version
 
