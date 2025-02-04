@@ -9,7 +9,7 @@ variables:
 
 default:
   tags:
-    - linux
+    - linux-runner
 
 before_script:
   - |
