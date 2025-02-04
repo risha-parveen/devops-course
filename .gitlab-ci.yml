@@ -7,11 +7,9 @@ services:
 variables:
   DOCKER_COMPOSE_VERSION: "2.21.0"
   # Update Docker connection settings
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_VERIFY: "1"
-  DOCKER_CERT_PATH: "/certs/client"
-  DOCKER_TLS_CERTDIR: "/certs"
-  DOCKER_DRIVER: overlay2
+
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_VERIFY: "0"
 
 stages:
   - build
