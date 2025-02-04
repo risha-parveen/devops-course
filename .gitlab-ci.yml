@@ -1,13 +1,16 @@
 image: docker:latest  # Use Docker image instead of Alpine
 
 services:
-  - docker:dind  # Add Docker-in-Docker service
+  - name: docker:27.2.0-dind
+    command: ["--tls=false"]
 
 variables:
   DOCKER_COMPOSE_VERSION: "2.21.0"
-  # Enable docker-in-docker
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""  # Disable TLS since we're using TCP
+  # Update Docker connection settings
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_VERIFY: "1"
+  DOCKER_CERT_PATH: "/certs/client"
+  DOCKER_TLS_CERTDIR: "/certs"
   DOCKER_DRIVER: overlay2
 
 stages:
