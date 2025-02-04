@@ -1,18 +1,13 @@
-image: docker:latest  # Use Docker image instead of Alpine
-
+image: docker:27.2.0
 services:
-  - name: docker:27.2.0-dind
-    command: ["--tls=false"]  # ✅ Ensure TLS is disabled
-
+  - docker:27.2.0-dind
 variables:
-  DOCKER_HOST: tcp://docker:2375  # ✅ Use non-TLS port
-  DOCKER_TLS_VERIFY: "0"  # ✅ Ensure TLS is OFF
-  DOCKER_CERT_PATH: ""  # ✅ Prevent Docker from looking for certs
-
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
 before_script:
-  - echo "Ensuring Docker doesn't use TLS..."
-  - rm -rf /root/.docker /certs  # ✅ Remove any lingering TLS configs
-  - apk add --no-cache docker-cli docker-cli-compose
+  # - echo "Ensuring Docker doesn't use TLS..."
+  # - rm -rf /root/.docker /certs  # ✅ Remove any lingering TLS configs
+  # - apk add --no-cache docker-cli docker-cli-compose
   - docker info  # ✅ Check if it works
 
 stages:
