@@ -22,18 +22,10 @@ default:
     - new-runner
 
 before_script:
-  - |
-    if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
-      echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
-      exit 1
-    fi
-  - apk add --no-cache py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make curl
-  # Install Docker Compose directly from GitHub releases
-  - |
-    curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
+  - rm -rf /root/.docker  # Ensure no old TLS settings
+  - apk add --no-cache docker-cli docker-cli-compose
   - docker info
-  - docker-compose --version
+  - docker-compose version
 
 build:
   stage: build
