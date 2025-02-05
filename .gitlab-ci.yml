@@ -8,7 +8,7 @@ default:
         echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
         exit 1
       fi
-    - docker info
+    - apk add --no-cache nodejs npm
 
 
 stages:
