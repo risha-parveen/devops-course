@@ -1,14 +1,17 @@
 const axios = require('axios');
-const Docker = require('dockerode');
-const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 require('dotenv').config()
 
 const AUTH_USERNAME = process.env.NGINX_USER || process.env.LOCAL_USERNAME;
 const AUTH_PASSWORD = process.env.NGINX_PASS || process.env.LOCAL_PASSWORD;
+// Detect if running inside Docker
+const IS_DOCKER = process.env.IS_DOCKER || 0;
+
+// Use correct hostnames
+const HOST = IS_DOCKER ? 'http://nginx' : 'http://localhost';
 
 // Configuration
 const config1 = {
-    baseURL: 'http://localhost:8198',
+    baseURL:  `${HOST}:8198`,
     auth: {
         username: AUTH_USERNAME, 
         password: AUTH_PASSWORD  
@@ -16,12 +19,14 @@ const config1 = {
 };
 
 const config2 = {
-    baseURL: 'http://localhost:8197',
+    baseURL:  `${HOST}:8197`,
     auth: {
         username: AUTH_USERNAME, 
         password: AUTH_PASSWORD  
     }
 }
+
+
 
 const api1 = axios.create(config1);
 
@@ -44,7 +49,7 @@ async function runTests() {
         // Test 1: Access without auth should fail
         console.log('Test 1: Testing unauthorized access to port 8198');
         try {
-            await axios.get('http://localhost:8198/');
+            await axios.get( `${HOST}:8198`);
             console.log('Test 1 failed: Should not allow unauthorized access');
         } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -75,7 +80,7 @@ async function runTests() {
         // Test 3: Access without auth should not fail for port 8197
         console.log('Test 3: Testing unauthorized access to port 8197');
         try {
-            await axios.get('http://localhost:8197/');
+            await axios.get( `${HOST}:8197`);
             console.log('Test 3 passed: Port allows unauthorized access');
         } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -87,7 +92,7 @@ async function runTests() {
 
         console.log('Test 4: Testing run_log functionality');
         try {
-            const response = await axios.get('http://localhost:8197/run-log');
+            const response = await axios.get( `${HOST}:8197/run-log`);
             if (response.data)
                 console.log('Test 4 passed: logs are returned');
             else console.log('Test 4 failed: logs are empty')

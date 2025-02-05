@@ -21,6 +21,7 @@ variables:
   DOCKER_TLS_CERTDIR: "/certs"
   NGINX_USER: $NGINX_USER  
   NGINX_PASS: $NGINX_PASS
+  IS_DOCKER: 1
 
 build:
   stage: build
