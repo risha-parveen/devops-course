@@ -9,7 +9,21 @@ const execPromise = util.promisify(exec);
 const app = express();
 const port = 8199;
 
+let currentState = 'INIT'
 let isProcessing = false;
+
+const stateLog = [];
+
+// Add this function for logging state changes
+function logStateChange(fromState, toState) {
+    const timestamp = new Date().toISOString();
+    stateLog.push(`${timestamp}: ${fromState}->${toState}`);
+}
+
+// Add this endpoint
+app.get('/run-log', (req, res) => {
+    res.type('text/plain').send(stateLog.join('\n') || 'No state changes logged yet');
+});
 
 // Function to get system information
 async function getSystemInfo() {
@@ -46,6 +60,13 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/', async (req, res) => {
+    if (currentState === 'INIT') {
+        logStateChange('INIT', 'RUNNING');
+        currentState = 'RUNNING';
+    } else if (currentState === 'PAUSED') {
+        logStateChange('PAUSED', 'RUNNING');
+        currentState = 'RUNNING';
+    }
     try {
         const infoService1 = await getSystemInfo();
         // for networking with service2 in docker containers
@@ -73,6 +94,8 @@ app.get('/', async (req, res) => {
         res.json(response);
         setTimeout(() => {
             isProcessing = false;
+            logStateChange('RUNNING', 'PAUSED');
+            currentState = 'PAUSED';
             console.log('Service is now available for new requests');
         }, 2000);
     } catch (error) {
@@ -83,6 +106,9 @@ app.get('/', async (req, res) => {
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 
 app.post('/shutdown', (req, res) => {
+    const prevState = currentState;
+    currentState = 'SHUTDOWN';
+    logStateChange(prevState, 'SHUTDOWN');
     res.json({ message: 'Shutting down all services...' });
     
     docker.listContainers({ all: true }, (err, containers) => {
@@ -97,17 +123,12 @@ app.post('/shutdown', (req, res) => {
                     console.error(`Error stopping container ${containerInfo.Id}: ${stopErr}`);
                     return;
                 }
-                // container.remove((removeErr) => {
-                //     if (removeErr) {
-                //         console.error(`Error removing container ${containerInfo.Id}: ${removeErr}`);
-                //     } else {
-                //         console.log(`Container ${containerInfo.Id} stopped and removed`);
-                //     }
-                // });
             });
         });
     });
 });
+
+
 
 app.listen(port, () => {
     console.log(`Service1 listening at ${port}`);

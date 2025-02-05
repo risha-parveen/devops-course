@@ -12,6 +12,7 @@ services:
       - backend  # Connects the service to the "backend" network
     environment:
       - SERVICE2_BASE_URL=http://service2:8200
+      - INIT_STATE=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -19,6 +20,7 @@ services:
     build: ./nginx
     ports:
       - "8198:8198" # Only exposing port 8198
+      - "8197:8197"
     networks:
       - backend
     depends_on:
