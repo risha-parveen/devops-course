@@ -25,7 +25,8 @@ variables:
 build:
   stage: build
   script:
-    - docker-compose up
+    - docker-compose build
+    - npm -v
 
 test:
   stage: test
