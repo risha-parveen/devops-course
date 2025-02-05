@@ -12,4 +12,4 @@ services:
 
 networks:
   devops-course_backend:
-    external: true  # Use the existing network
+    # external: true  # Use the existing network
