@@ -27,15 +27,14 @@ build:
   stage: build
   script:
     - docker-compose build
-    - npm -v
 
 test:
   stage: test
   script:
-    - docker-compose up -d
-    - npm install
-    # Pass CI variables directly to the test command
-    - NGINX_USER=$NGINX_USER NGINX_PASS=$NGINX_PASS npm test
+    - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build --abort-on-container-exit
+  variables:
+    NGINX_USER: $NGINX_USER
+    NGINX_PASS: $NGINX_PASS
     
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'

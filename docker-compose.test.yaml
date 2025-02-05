@@ -1,0 +1,15 @@
+services:
+  test-runner:
+    image: node:18
+    depends_on:
+      - nginx
+    networks:
+      - devops-course_backend
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["node", "tests/api_tests.js"]
+
+networks:
+  devops-course_backend:
+    external: true  # Use the existing network

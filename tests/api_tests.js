@@ -4,7 +4,7 @@ require('dotenv').config()
 const AUTH_USERNAME = process.env.NGINX_USER || process.env.LOCAL_USERNAME;
 const AUTH_PASSWORD = process.env.NGINX_PASS || process.env.LOCAL_PASSWORD;
 // Detect if running inside Docker
-const IS_DOCKER = process.env.IS_DOCKER || 0;
+const IS_DOCKER = process.env.IS_DOCKER || 1;
 
 // Use correct hostnames
 const HOST = IS_DOCKER ? 'http://nginx' : 'http://localhost';
