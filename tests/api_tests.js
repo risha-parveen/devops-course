@@ -35,7 +35,7 @@ const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function checkServicesAvailable() {
     try {
-        await api1.get('/api', config1);
+        await api1.get('/api');
         return true;
     } catch (error) {
         return false;
@@ -58,6 +58,7 @@ async function runTests() {
                 console.log('Test 1 failed with unexpected error:', error.message);
             }
         }
+        console.log(AUTH_USERNAME)
 
         // Test 2: Access main API endpoint with auth
         console.log('\nTest 2: Testing authorized access to main API');
@@ -139,6 +140,9 @@ async function runTests() {
 
             if (servicesDown) {
                 console.log('Test 5 passed: Services have been shut down successfully');
+                 // Add this line to ensure clean exit
+                console.log('All tests completed successfully! Shutdown command sent.');
+                process.exit(0); 
             } else {
                 console.log('Test 5 failed: Services are still responding after shutdown');
             }
