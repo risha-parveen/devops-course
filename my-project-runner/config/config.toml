@@ -6,11 +6,11 @@ shutdown_timeout = 0
   session_timeout = 1800
 
 [[runners]]
-  name = "new-runner"
+  name = "My Docker Runner"
   url = "https://compse140.devops-gitlab.rd.tuni.fi"
-  id = 340
-  token = "glrt-t3_zdzMLxSybrje5fD5y7kT"
-  token_obtained_at = 2025-02-04T21:54:53Z
+  id = 341
+  token = "glrt-t3_-wD_HRUexcFLUvhj-_cM"
+  token_obtained_at = 2025-02-04T23:19:56Z
   token_expires_at = 0001-01-01T00:00:00Z
   executor = "docker"
   [runners.custom_build_dir]
@@ -21,11 +21,11 @@ shutdown_timeout = 0
     [runners.cache.azure]
   [runners.docker]
     tls_verify = false
-    image = "docker:latest"
-    privileged = false
+    image = "docker:24.0.5"
+    privileged = true
     disable_entrypoint_overwrite = false
     oom_kill_disable = false
     disable_cache = false
-    volumes = ["/cache"]
+    volumes = ["/certs/client", "/cache"]
     shm_size = 0
     network_mtu = 0

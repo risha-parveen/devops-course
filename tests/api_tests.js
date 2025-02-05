@@ -3,8 +3,9 @@ const Docker = require('dockerode');
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 require('dotenv').config()
 
-const AUTH_USERNAME = process.env.NGINX_USER || process.env.USERNAME;
-const AUTH_PASSWORD = process.env.NGINX_PASS || process.env.PASSWORD;
+const AUTH_USERNAME = process.env.NGINX_USER || process.env.LOCAL_USERNAME;
+const AUTH_PASSWORD = process.env.NGINX_PASS || process.env.LOCAL_PASSWORD;
+
 // Configuration
 const config = {
     baseURL: 'http://localhost:8198',
