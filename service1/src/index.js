@@ -59,7 +59,7 @@ app.get('/health', (req, res) => {
     res.json({ available: !isProcessing });
 });
 
-app.get('/', async (req, res) => {
+app.get('/request', async (req, res) => {
     if (currentState === 'INIT') {
         logStateChange('INIT', 'RUNNING');
         currentState = 'RUNNING';

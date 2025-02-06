@@ -36,7 +36,7 @@
             const textarea = document.getElementById('response');
             
             try {
-                const response = await fetch('/api', {
+                const response = await fetch('/request', {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json'
@@ -104,7 +104,7 @@ ${data.Service2['available disk space']}
             const textarea = document.getElementById('response');
             
             try {
-                const response = await fetch('/api/run-log', {
+                const response = await fetch('/run-log', {
                     method: 'GET',
                     headers: {
                         'Accept': 'text/plain'

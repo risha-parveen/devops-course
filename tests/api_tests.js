@@ -35,7 +35,7 @@ const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function checkServicesAvailable() {
     try {
-        await api1.get('/api');
+        await api1.get('/request');
         return true;
     } catch (error) {
         return false;
@@ -63,7 +63,7 @@ async function runTests() {
         // Test 2: Access main API endpoint with auth
         console.log('\nTest 2: Testing authorized access to main API');
         try {
-            const response = await api1.get('api');
+            const response = await api1.get('request');
             
             const hasService1Data = response.data && response.data.Service1;
             const hasService2Data = response.data && response.data.Service2;
