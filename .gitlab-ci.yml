@@ -19,8 +19,6 @@ stages:
 
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
-  NGINX_USER: $NGINX_USER  
-  NGINX_PASS: $NGINX_PASS
   IS_DOCKER: 1
 
 build:
@@ -31,6 +29,8 @@ build:
 test:
   stage: test
   script:
+    - echo "NGINX_USER=$NGINX_USER" > .env
+    - echo "NGINX_PASS=$NGINX_PASS" >> .env
     - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
