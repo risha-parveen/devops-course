@@ -29,7 +29,9 @@ build:
 test:
   stage: test
   script:
-    - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build --abort-on-container-exit -e NGINX_USER=$NGINX_USER -e NGINX_PASS=$NGINX_PASS
+    - echo "NGINX_USER=$NGINX_USER" > .env
+    - echo "NGINX_PASS=$NGINX_PASS" >> .env
+    - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build --abort-on-container-exit
     
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
