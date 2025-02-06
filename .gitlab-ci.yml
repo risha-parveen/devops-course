@@ -32,6 +32,8 @@ test:
   stage: test
   script:
     - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build --abort-on-container-exit
+    # --env NGINX_USER=${NGINX_USER}
+    # --env NGINX_PASS=${NGINX_PASS}
   variables:
     NGINX_USER: $NGINX_USER
     NGINX_PASS: $NGINX_PASS

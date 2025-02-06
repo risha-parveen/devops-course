@@ -10,8 +10,8 @@ services:
       - ./tests:/app/tests
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - NGINX_USER=${NGINX_USER}  # Replace with your actual nginx username
-      - NGINX_PASS=${NGINX_PASS}  # Replace with your actual nginx password
+      - NGINX_USER
+      - NGINX_PASS
       - IS_DOCKER=1
     command: >
       bash -c "npm install && npm test"
