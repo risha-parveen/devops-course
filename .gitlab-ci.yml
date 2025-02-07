@@ -27,8 +27,7 @@ build:
     - docker-compose up -d  # Run in detached mode
     - echo "List of Docker networks:"
     - docker network ls
-    - docker-compose -f docker-compose.test.yaml up
-    - docker-compose down
+    - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up
 
 test:
   stage: test
