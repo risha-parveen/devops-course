@@ -30,7 +30,6 @@ test:
   script:
     - echo "NGINX_USER=$NGINX_USER" > .env
     - echo "NGINX_PASS=$NGINX_PASS" >> .env
-    - docker-compose up -d
     - docker network ls
     - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up
   rules:
@@ -38,8 +37,6 @@ test:
 
 deploy:
   stage: deploy
-  variables:
-    GIT_STRATEGY: none
   script:
     # Create deployment script
     - |
