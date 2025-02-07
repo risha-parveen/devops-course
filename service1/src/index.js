@@ -185,6 +185,26 @@ Time since last boot: ${infoService2.uptimeSeconds} seconds`
     }
 });
 
+app.post('/shutdown', (req, res) => {
+
+    // Handle docker container shutdown
+    const docker = new Docker({ socketPath: '/var/run/docker.sock' });
+    docker.listContainers({ all: true }, (err, containers) => {
+        if (err) {
+            console.error('Error listing containers:', err);
+            return res.status(500).json({ error: 'Failed to shutdown containers' });
+        }
+        containers.forEach((containerInfo) => {
+            const container = docker.getContainer(containerInfo.Id);
+            container.stop((stopErr) => {
+                if (stopErr) console.error(`Error stopping container ${containerInfo.Id}:`, stopErr);
+            });
+        });
+    });
+
+    res.status(200).json({ message: 'Shutdown initiated' });
+});
+
 // Start server
 app.listen(port, () => {
     console.log(`Service1 listening at ${port}`);
