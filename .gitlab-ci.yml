@@ -39,7 +39,8 @@ deploy:
   tags:
     - production
   script:
-    - docker-compose up -d
+    - docker system prune -af
+    - docker-compose up --build -d
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
   environment:

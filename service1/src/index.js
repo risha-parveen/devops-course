@@ -53,6 +53,23 @@ function authMiddleware(req, res, next) {
 
 app.use(authMiddleware);
 
+const monitoring = {
+    startTime: new Date().toISOString(),
+    requestCount: 0,
+    requestsByEndpoint: {
+        '/state': 0,
+        '/request': 0,
+    }
+};
+
+app.use((req, res, next) => {
+    monitoring.requestCount++;
+    if (monitoring.requestsByEndpoint.hasOwnProperty(req.path)) {
+        monitoring.requestsByEndpoint[req.path]++;
+    }
+    next();
+});
+
 // State logging
 function logStateChange(fromState, toState) {
     const timestamp = new Date().toISOString();
@@ -79,6 +96,22 @@ async function getSystemInfo() {
         throw error;
     }
 }
+
+// Add monitoring endpoint
+app.get('/monitoring', (req, res) => {
+    const uptime = Math.floor((new Date() - new Date(monitoring.startTime)) / 1000);
+    res.json({
+        serviceStatus: {
+            currentState,
+            startTime: monitoring.startTime,
+            uptime: `${uptime} seconds`
+        },
+        requests: {
+            total: monitoring.requestCount,
+            byEndpoint: monitoring.requestsByEndpoint
+        }
+    });
+});
 
 // Endpoints
 app.get('/run-log', (req, res) => {

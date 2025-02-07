@@ -98,11 +98,39 @@ ${data.Service2['available disk space']}
                 }
             }
         }
+
+        async function updateMonitoring() {
+            const monitoringDiv = document.getElementById('monitoring');
+            try {
+                const response = await fetch('/monitoring', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                monitoringDiv.textContent = `Service Uptime: ${data.serviceStatus.uptime}, 
+\nTotal Requests: ${data.requests.total}`;
+            } catch (error) {
+                monitoringDiv.textContent = `Monitoring Error: ${error.message}`;
+            }
+        }
+
+        setInterval(updateMonitoring, 5000);
+        
+        // Call once on page load
+        document.addEventListener('DOMContentLoaded', updateMonitoring);
     </script>
 </head>
 <body>
     <div class="container">
         <h2>Dashboard</h2>
+        <div id="monitoring" class="monitoring">Loading monitoring data...</div>
         <button onclick="sendRequest()" style="background-color: rgb(50, 49, 49); color: white; font-weight: bold;">REQUEST</button>
         <button onclick="stopService()" style="background-color: rgb(207, 207, 207); color: black; font-weight: bold;">STOP</button>
         <!-- <button onclick="getRunLog()" style="background-color: rgb(50, 49, 49); color: white; font-weight: bold;">VIEW LOG</button> -->
