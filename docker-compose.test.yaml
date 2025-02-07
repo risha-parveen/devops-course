@@ -1,21 +1,21 @@
 services:
-  test-runner:
-    image: node:20
-    depends_on:
-      - nginx
-    networks:
-      - devops-course_backend
-    working_dir: /app/tests
-    volumes:
-      - ./tests:/app/tests
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - NGINX_USER
-      - NGINX_PASS
-      - IS_DOCKER=1
-    command: >
-      bash -c "npm install && npm test"
+ test-runner:
+   image: node:20                  # Uses Node.js v20 image as base
+   depends_on:
+     - nginx                       # Waits for nginx to start first
+   networks:
+     - devops-course_backend      # Connects to existing backend network
+   working_dir: /app/tests        # Sets working directory for commands
+   volumes:
+     - ./tests:/app/tests         # Mounts local tests directory
+     - /var/run/docker.sock:/var/run/docker.sock  # Allows Docker commands inside container
+   environment:
+     - NGINX_USER                 # Auth credentials
+     - NGINX_PASS
+     - IS_DOCKER=1               # Flag to indicate Docker environment
+   command: >
+     bash -c "npm install && npm test"  # Installs deps and runs tests
 
 networks:
-  devops-course_backend:
-    external: true  # Use the existing network
+ devops-course_backend:
+   external: true                # Uses pre-existing network instead of creating new

@@ -1,48 +1,55 @@
+# Specifies the default Docker image and services for all jobs
 default:
-  image: docker:24.0.5
+  image: docker:24.0.5                  # Uses Docker-in-Docker (DinD) as base image
   services:
-    - docker:24.0.5-dind
-    
+    - docker:24.0.5-dind               # Enables Docker-in-Docker service for container builds
+
+# Defines the pipeline stages in sequential order
 stages:
   - build
   - test
   - deploy
-  - cleanup
 
+# Global variables accessible across all jobs
 variables:
-  DOCKER_TLS_CERTDIR: "/certs"
-  IS_DOCKER: 1
+  DOCKER_TLS_CERTDIR: "/certs"         # Sets up TLS certificates directory for secure Docker communication
+  IS_DOCKER: 1                         # Environment flag to indicate Docker environment
 
+# Build stage job
 build:
   stage: build
   script:
-    - docker-compose up -d
+    - docker-compose up -d             # Starts containers in detached mode using docker-compose
 
+# Test stage job
 test:
   stage: test
   script:
+    # Validates required environment variables
     - |
       if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
         echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
         exit 1
       fi
-    - apk add --no-cache nodejs npm
+    - apk add --no-cache nodejs npm    # Installs Node.js and npm using Alpine package manager
+    # Creates .env file with NGINX credentials
     - echo "NGINX_USER=$NGINX_USER" > .env
     - echo "NGINX_PASS=$NGINX_PASS" >> .env
-    - docker network ls
+    - docker network ls                # Lists Docker networks for debugging
+    # Runs tests using test-specific docker-compose configuration
     - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up
   rules:
-    - if: '$CI_COMMIT_BRANCH == "project"'
+    - if: '$CI_COMMIT_BRANCH == "project"'  # Only runs on 'project' branch
 
+# Deploy stage job
 deploy:
   stage: deploy
   tags:
-    - production
+    - production                       # Runs on runners tagged with 'production'
   script:
-    - docker system prune -af
-    - docker-compose up --build -d
+    - docker system prune -af          # Removes all unused Docker resources
+    - docker-compose up --build -d     # Rebuilds and starts containers in detached mode
   rules:
-    - if: '$CI_COMMIT_BRANCH == "project"'
+    - if: '$CI_COMMIT_BRANCH == "project"'  # Only deploys from 'project' branch
   environment:
-    name: production
-  
+    name: production                   # Specifies deployment environment
