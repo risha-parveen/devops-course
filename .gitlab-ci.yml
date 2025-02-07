@@ -2,14 +2,6 @@ default:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  before_script:
-    - |
-      if [ -z "$NGINX_USER" ] || [ -z "$NGINX_PASS" ]; then
-        echo "Error: Required variables NGINX_USER and/or NGINX_PASS are not set"
-        exit 1
-      fi
-    - apk add --no-cache nodejs npm
-
 
 stages:
   - build
