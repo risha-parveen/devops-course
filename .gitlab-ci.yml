@@ -37,8 +37,12 @@ test:
 
 deploy:
   stage: deploy
+  variables:
+    DOCKER_HOST: "tcp://host.docker.internal:2375"  # For Windows/macOS
+    # Or use "tcp://172.17.0.1:2375" for Linux
   script:
-    # Create deployment script
+    - echo "NGINX_USER=$NGINX_USER" > .env
+    - echo "NGINX_PASS=$NGINX_PASS" >> .env
     - |
       cat > deploy.sh << 'EOF'
       #!/bin/sh
@@ -69,17 +73,4 @@ deploy:
       fi
       EOF
     - chmod +x deploy.sh
-    # Execute deployment
     - ./deploy.sh
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "project"'
-  environment:
-    name: production
-    
-cleanup:
-  stage: cleanup
-  script:
-    - docker system prune -f
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "project"'
-  when: always
