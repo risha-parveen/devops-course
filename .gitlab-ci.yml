@@ -24,7 +24,8 @@ variables:
 build:
   stage: build
   script:
-    - docker-compose build
+    - docker-compose up --build
+    - docker network ls
 
 test:
   stage: test
