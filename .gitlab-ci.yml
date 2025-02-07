@@ -21,11 +21,12 @@ variables:
   DOCKER_TLS_CERTDIR: "/certs"
   IS_DOCKER: 1
 
-build:
-  stage: build
-  script:
-    - docker-compose up --build
+script:
+    - docker-compose build
+    - docker-compose up -d  # Run in detached mode
+    - echo "List of Docker networks:"
     - docker network ls
+    - docker-compose down
 
 test:
   stage: test
