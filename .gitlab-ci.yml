@@ -22,6 +22,7 @@ variables:
   IS_DOCKER: 1
 
 build:
+  stage: build
   script:
     - docker-compose up -d
 
@@ -37,40 +38,12 @@ test:
 
 deploy:
   stage: deploy
-  variables:
-    DOCKER_HOST: "tcp://host.docker.internal:2375"  # For Windows/macOS
-    # Or use "tcp://172.17.0.1:2375" for Linux
+  tags:
+    - production
   script:
-    - echo "NGINX_USER=$NGINX_USER" > .env
-    - echo "NGINX_PASS=$NGINX_PASS" >> .env
-    - |
-      cat > deploy.sh << 'EOF'
-      #!/bin/sh
-      # Stop any existing containers
-      docker-compose down || true
-      
-      # Remove old images
-      docker-compose rm -f || true
-      
-      # Pull new images
-      docker-compose pull || true
-      
-      # Start the new containers
-      docker-compose up -d
-      
-      # Wait for services to be healthy
-      echo "Waiting for services to be healthy..."
-      sleep 10
-      
-      # Check if services are running
-      if docker-compose ps | grep -q "Up"; then
-        echo "Deployment successful!"
-        exit 0
-      else
-        echo "Deployment failed!"
-        docker-compose logs
-        exit 1
-      fi
-      EOF
-    - chmod +x deploy.sh
-    - ./deploy.sh
+    - docker-compose up -d
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
+  environment:
+    name: production
+  
