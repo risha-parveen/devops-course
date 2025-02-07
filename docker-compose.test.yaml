@@ -4,7 +4,7 @@ services:
     depends_on:
       - nginx
     networks:
-      - devops-course_backend
+      - backend
     working_dir: /app/tests
     volumes:
       - ./tests:/app/tests
@@ -17,5 +17,5 @@ services:
       bash -c "npm install && npm test"
 
 networks:
-  devops-course_backend:
+  backend:
     external: true  # Use the existing network
