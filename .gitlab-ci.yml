@@ -14,8 +14,8 @@ default:
 stages:
   - build
   - test
-  # - deploy
-  # - cleanup
+  - deploy
+  - cleanup
 
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
@@ -34,3 +34,54 @@ test:
     - docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up
   rules:
     - if: '$CI_COMMIT_BRANCH == "project"'
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    # Create deployment script
+    - |
+      cat > deploy.sh << 'EOF'
+      #!/bin/sh
+      # Stop any existing containers
+      docker-compose down || true
+      
+      # Remove old images
+      docker-compose rm -f || true
+      
+      # Pull new images
+      docker-compose pull || true
+      
+      # Start the new containers
+      docker-compose up -d
+      
+      # Wait for services to be healthy
+      echo "Waiting for services to be healthy..."
+      sleep 10
+      
+      # Check if services are running
+      if docker-compose ps | grep -q "Up"; then
+        echo "Deployment successful!"
+        exit 0
+      else
+        echo "Deployment failed!"
+        docker-compose logs
+        exit 1
+      fi
+      EOF
+    - chmod +x deploy.sh
+    # Execute deployment
+    - ./deploy.sh
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
+  environment:
+    name: production
+    
+cleanup:
+  stage: cleanup
+  script:
+    - docker system prune -f
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "project"'
+  when: always
